@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Johari Window Feedback</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            opacity: 0.95;
+            font-size: 1em;
+        }
+        
+        .time-estimate {
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        .content {
+            padding: 35px;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .info-box p {
+            color: #555;
+            line-height: 1.5;
+            margin: 0;
+        }
+        
+        .setup-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .form-group {
+            margin-bottom: 28px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+        
+        .label-note {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: normal;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        
+        select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+        
+        .qualities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        
+        .quality-item {
+            position: relative;
+        }
+        
+        .quality-item input[type="checkbox"] {
+            display: none;
+        }
+        
+        .quality-item label {
+            display: block;
+            padding: 11px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: normal;
+            font-size: 0.9em;
+        }
+        
+        .quality-item input[type="checkbox"]:checked + label {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            font-weight: 500;
+        }
+        
+        .quality-item label:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .section-divider {
+            border: none;
+            border-top: 2px solid #e0e0e0;
+            margin: 35px 0;
+        }
+        
+        .section-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 26px;
+            font-size: 0.85em;
+            margin-right: 8px;
+            font-weight: 600;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: block;
+            width: 100%;
+            margin-top: 30px;
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            margin-top: 15px;
+        }
+        
+        .btn-secondary:hover {
+            background: #f8f9fa;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 5px solid #28a745;
+            display: none;
+            text-align: center;
+        }
+        
+        .success-message h3 {
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .success-message p {
+            font-size: 1.05em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .request-feedback-box {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 2px solid #28a745;
+        }
+        
+        .request-feedback-box h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .link-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            word-break: break-all;
+            border: 2px dashed #667eea;
+        }
+        
+        .copy-btn {
+            background: #28a745;
+            padding: 10px 20px;
+            font-size: 0.95em;
+            margin-top: 10px;
+            width: auto;
+            display: inline-block;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.4em;
+            }
+            
+            .qualities-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🪟 Johari Window Feedback</h1>
+            <p>Help your classmate discover their blind spots</p>
+            <div class="time-estimate">⏱️ Estimated time: 10-15 minutes</div>
+        </div>
+        
+        <div class="content">
+            <div id="formSection">
+                <div class="info-box">
+                    <p><strong>Why you're doing this:</strong> Your honest, constructive feedback will help your classmate understand how others perceive them - crucial for developing self-awareness as a counsellor. This submission is completely anonymous.</p>
+                </div>
+                
+                <div class="setup-section">
+                    <h3 style="color: #667eea; margin-bottom: 10px; font-size: 1.1em;">Providing Feedback For:</h3>
+                    <div style="background: white; padding: 15px; border-radius: 8px; border: 2px solid #667eea; text-align: center;">
+                        <div id="recipientDisplay" style="font-size: 1.5em; font-weight: 600; color: #764ba2;"></div>
+                    </div>
+                    <input type="hidden" id="recipientName" name="recipient_name">
+                    <input type="hidden" id="recipientEmail" name="recipient_email">
+                </div>
+                
+                <form id="feedbackForm">
+                    <div class="section-title">💪 Strengths & Qualities</div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <span class="question-number">1</span>
+                            Select the top qualities you see in them:
+                            <div class="label-note">Choose 3-6 qualities that stand out most</div>
+                        </label>
+                        <div class="qualities-grid">
+                            <div class="quality-item">
+                                <input type="checkbox" id="q1" value="Empathetic">
+                                <label for="q1">Empathetic</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q2" value="Good Listener">
+                                <label for="q2">Good Listener</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q3" value="Warm">
+                                <label for="q3">Warm</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q4" value="Patient">
+                                <label for="q4">Patient</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q5" value="Genuine">
+                                <label for="q5">Genuine</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q6" value="Non-judgmental">
+                                <label for="q6">Non-judgmental</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q7" value="Supportive">
+                                <label for="q7">Supportive</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q8" value="Insightful">
+                                <label for="q8">Insightful</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q9" value="Calm">
+                                <label for="q9">Calm</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q10" value="Respectful">
+                                <label for="q10">Respectful</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q11" value="Self-aware">
+                                <label for="q11">Self-aware</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q12" value="Trustworthy">
+                                <label for="q12">Trustworthy</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q13" value="Open-minded">
+                                <label for="q13">Open-minded</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q14" value="Compassionate">
+                                <label for="q14">Compassionate</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q15" value="Professional">
+                                <label for="q15">Professional</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q16" value="Thoughtful">
+                                <label for="q16">Thoughtful</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q17" value="Present">
+                                <label for="q17">Present</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="q18" value="Encouraging">
+                                <label for="q18">Encouraging</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="greatestStrength">
+                            <span class="question-number">2</span>
+                            What's their greatest strength as a developing counsellor?
+                        </label>
+                        <textarea id="greatestStrength" placeholder="Be specific..." required></textarea>
+                    </div>
+                    
+                    <hr class="section-divider">
+                    
+                    <div class="section-title">🔍 Areas for Growth</div>
+                    
+                    <div class="form-group">
+                        <label for="biggestOpportunity">
+                            <span class="question-number">3</span>
+                            What do you think is their biggest opportunity for development?
+                            <div class="label-note">What could make them even more effective?</div>
+                        </label>
+                        <textarea id="biggestOpportunity" placeholder="Think about their counselling skills, self-awareness, or interpersonal style..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="oneWeakness">
+                            <span class="question-number">4</span>
+                            What's one area they could improve?
+                            <div class="label-note">Frame this constructively - what's holding them back from being their best?</div>
+                        </label>
+                        <textarea id="oneWeakness" placeholder="Be honest but kind..." required></textarea>
+                    </div>
+                    
+                    <hr class="section-divider">
+                    
+                    <div class="section-title">👁️ Blind Spots & Patterns</div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <span class="question-number">5</span>
+                            Are there patterns or habits they might not be aware of?
+                            <div class="label-note">Select any that you've observed</div>
+                        </label>
+                        <div class="qualities-grid">
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs1" value="Interrupts when excited">
+                                <label for="bs1">Interrupts when excited</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs2" value="Gives advice too quickly">
+                                <label for="bs2">Gives advice too quickly</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs3" value="Struggles with silence">
+                                <label for="bs3">Struggles with silence</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs4" value="Dominates discussions">
+                                <label for="bs4">Dominates discussions</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs5" value="Too self-deprecating">
+                                <label for="bs5">Too self-deprecating</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs6" value="Avoids conflict">
+                                <label for="bs6">Avoids conflict</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs7" value="Over-analyzes">
+                                <label for="bs7">Over-analyzes</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs8" value="Doesn't ask for help">
+                                <label for="bs8">Doesn't ask for help</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs9" value="Perfectionist tendencies">
+                                <label for="bs9">Perfectionist tendencies</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs10" value="Defensive when challenged">
+                                <label for="bs10">Defensive when challenged</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs11" value="Poor time boundaries">
+                                <label for="bs11">Poor time boundaries</label>
+                            </div>
+                            <div class="quality-item">
+                                <input type="checkbox" id="bs12" value="Over-shares personally">
+                                <label for="bs12">Over-shares personally</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="changeOneThing">
+                            <span class="question-number">6</span>
+                            If you could change one thing about them, what would it be?
+                            <div class="label-note">Be direct - this is where real growth happens</div>
+                        </label>
+                        <textarea id="changeOneThing" placeholder="What would make the biggest positive difference?" required></textarea>
+                    </div>
+                    
+                    <hr class="section-divider">
+                    
+                    <div class="section-title">💬 Communication & Relationships</div>
+                    
+                    <div class="form-group">
+                        <label for="communicateEffectively">
+                            <span class="question-number">7</span>
+                            What could they do to communicate more effectively?
+                            <div class="label-note">Think about class discussions, one-on-one interactions, group work</div>
+                        </label>
+                        <textarea id="communicateEffectively" placeholder="How could they improve their communication?" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="likeAndAnnoys">
+                            <span class="question-number">8</span>
+                            What's one thing you appreciate about them, and one thing that can be challenging?
+                            <div class="label-note">The good and the growth edge</div>
+                        </label>
+                        <textarea id="likeAndAnnoys" placeholder="Appreciate: ...&#10;Challenging: ..." required></textarea>
+                    </div>
+                    
+                    <hr class="section-divider">
+                    
+                    <div class="section-title">🎯 Actionable Advice</div>
+                    
+                    <div class="form-group">
+                        <label for="focusLearning">
+                            <span class="question-number">9</span>
+                            What should they focus on in their learning and growth?
+                            <div class="label-note">Specific skills, knowledge areas, or personal work</div>
+                        </label>
+                        <textarea id="focusLearning" placeholder="Where should they invest their energy?" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="moreProactive">
+                            <span class="question-number">10</span>
+                            What's one thing they could do to be more proactive?
+                            <div class="label-note">In their training, relationships, or professional development</div>
+                        </label>
+                        <textarea id="moreProactive" placeholder="A specific action or approach..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="finalThoughts">
+                            <span class="question-number">11</span>
+                            Any final thoughts or encouragement?
+                            <div class="label-note">Optional - anything else you'd like them to know</div>
+                        </label>
+                        <textarea id="finalThoughts" placeholder="Your closing thoughts..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="submitBtn">Submit Anonymous Feedback</button>
+                </form>
+                
+                <div class="loading" id="loadingMessage">
+                    <div class="spinner"></div>
+                    <p>Submitting your feedback...</p>
+                </div>
+            </div>
+            
+            <div class="success-message" id="successMessage">
+                <h3>✓ Feedback Submitted Successfully!</h3>
+                <p>Thank you for taking the time to provide thoughtful, constructive feedback.</p>
+                <p>Your anonymous response has been sent.</p>
+                
+                <div class="request-feedback-box">
+                    <h4>🎯 Want feedback for yourself?</h4>
+                    <p style="margin-bottom: 15px; color: #555;">Select your name to generate your personal feedback request link:</p>
+                    
+                    <select id="myNameSelect" style="margin-bottom: 15px;">
+                        <option value="">-- Select your name --</option>
+                        <option value="Aoife O'Sullivan|Aoife.OSullivan@pcicollege-edu.ie">Aoife O'Sullivan</option>
+                        <option value="Natalia Cherkasskaya|Natalia.Cherkasskaya@pcicollege-edu.ie">Natalia Cherkasskaya</option>
+                        <option value="Paul Murphy|Paul.Murphy@pcicollege-edu.ie">Paul Murphy</option>
+                        <option value="Annien Rossouw|Annien.Rossouw@pcicollege-edu.ie">Annien Rossouw</option>
+                        <option value="Keith Caffrey|Keith.Caffrey@pcicollege-edu.ie">Keith Caffrey</option>
+                        <option value="Maria Porcu|Maria.Porcu@pcicollege-edu.ie">Maria Porcu</option>
+                        <option value="Jakub Skrzypczak|Jakub.Skrzypczak@pcicollege-edu.ie">Jakub Skrzypczak</option>
+                        <option value="Elizabeth Cairns|Elizabeth.Cairns@pcicollege-edu.ie">Elizabeth Cairns</option>
+                        <option value="Dara Moriarty|Dara.Moriarty@pcicollege-edu.ie">Dara Moriarty</option>
+                        <option value="Kamel Assam|Kamel.Assam@pcicollege-edu.ie">Kamel Assam</option>
+                        <option value="Maryam Ali|Maryam.Ali@pcicollege-edu.ie">Maryam Ali</option>
+                        <option value="Irene Galimberti|Irene.Galimberti@pcicollege-edu.ie">Irene Galimberti</option>
+                        <option value="Emma Nolan|Emma.Nolan@pcicollege-edu.ie">Emma Nolan</option>
+                        <option value="Ilia Maliarenko|Ilia.Maliarenko@pcicollege-edu.ie">Ilia Maliarenko</option>
+                    </select>
+                    
+                    <button onclick="generateMyLink()" class="btn">Generate My Feedback Link</button>
+                    
+                    <div id="myLinkBox" style="display:none; margin-top: 20px;">
+                        <p style="color: #555; margin-bottom: 10px;"><strong>Your personal feedback link:</strong></p>
+                        <div class="link-box" id="generatedLink"></div>
+                        <button onclick="copyMyLink()" class="btn copy-btn">📋 Copy Link</button>
+                        <p style="margin-top: 15px; color: #555; font-size: 0.95em;">Share this link in your Teams channel to request feedback from your classmates!</p>
+                    </div>
+                </div>
+                
+                <button onclick="location.reload()" class="btn btn-secondary">Provide More Feedback</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store recipient info globally
+        let recipientName = '';
+        let recipientEmail = '';
+        
+        // Handle form submission
+        document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!recipientName || !recipientEmail) {
+                alert('Error: Recipient information is missing');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loadingMessage').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            
+            // Collect form data
+            const qualities = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .filter(cb => cb.id.startsWith('q'))
+                .map(cb => cb.value).join(', ');
+            
+            const blindSpots = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .filter(cb => cb.id.startsWith('bs'))
+                .map(cb => cb.value).join(', ');
+            
+            const formData = new FormData();
+            formData.append('_subject', 'New Johari Window Feedback from a Classmate');
+            formData.append('_captcha', 'false');
+            formData.append('_template', 'box');
+            formData.append('recipient_name', recipientName);
+            formData.append('positive_qualities', qualities);
+            formData.append('greatest_strength', document.getElementById('greatestStrength').value);
+            formData.append('biggest_opportunity', document.getElementById('biggestOpportunity').value);
+            formData.append('area_to_improve', document.getElementById('oneWeakness').value);
+            formData.append('blind_spot_patterns', blindSpots);
+            formData.append('change_one_thing', document.getElementById('changeOneThing').value);
+            formData.append('communicate_effectively', document.getElementById('communicateEffectively').value);
+            formData.append('appreciate_and_challenging', document.getElementById('likeAndAnnoys').value);
+            formData.append('focus_learning', document.getElementById('focusLearning').value);
+            formData.append('be_more_proactive', document.getElementById('moreProactive').value);
+            formData.append('final_thoughts', document.getElementById('finalThoughts').value);
+            
+            try {
+                const response = await fetch(`https://formsubmit.co/${recipientEmail}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // Hide form and loading, show success
+                document.getElementById('formSection').style.display = 'none';
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            } catch (error) {
+                alert('There was an error submitting your feedback. Please try again.');
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('submitBtn').disabled = false;
+            }
+        });
+        
+        // Generate personal feedback link
+        function generateMyLink() {
+            const selected = document.getElementById('myNameSelect').value;
+            if (!selected) {
+                alert('Please select your name first');
+                return;
+            }
+            
+            const [name, email] = selected.split('|');
+            const baseUrl = window.location.href.split('?')[0];
+            const link = `${baseUrl}?recipient=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`;
+            
+            document.getElementById('generatedLink').textContent = link;
+            document.getElementById('myLinkBox').style.display = 'block';
+        }
+        
+        // Copy link to clipboard
+        function copyMyLink() {
+            const link = document.getElementById('generatedLink').textContent;
+            navigator.clipboard.writeText(link).then(function() {
+                const btn = event.target;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = '#218838';
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy Link';
+                    btn.style.background = '#28a745';
+                }, 2000);
+            });
+        }
+        
+        // Set recipient on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlRecipientName = urlParams.get('recipient');
+            const urlRecipientEmail = urlParams.get('email');
+            
+            if (urlRecipientName && urlRecipientEmail) {
+                // Someone clicked a personal link
+                recipientName = urlRecipientName;
+                recipientEmail = urlRecipientEmail;
+            } else {
+                // Main link - default to Paul Murphy
+                recipientName = 'Paul Murphy';
+                recipientEmail = 'Paul.Murphy@pcicollege-edu.ie';
+            }
+            
+            // Display the recipient name
+            document.getElementById('recipientDisplay').textContent = recipientName;
+            
+            // Set hidden inputs
+            document.getElementById('recipientName').value = recipientName;
+            document.getElementById('recipientEmail').value = recipientEmail;
+        });
+    </script>
+</body>
+</html>
